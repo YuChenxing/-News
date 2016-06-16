@@ -1,0 +1,46 @@
+
+.container-div{
+	display: none;
+}
+.mui-card{
+	margin-top: 20px;
+}
+
+.viedio_title{
+	display: block;
+	margin: 10px;
+	font-size: 18px;
+	color: black;
+}
+.viedio_subtitle{
+	display: block;
+	margin:0px 10px 10px;
+	color: gray;
+}
+.viedio-container{
+	margin: 5px 0px;
+	padding-bottom: 10px;
+
+}
+.play-video{
+	display: block;
+	margin: 0 auto;
+	margin-bottom: 10px;
+	width: 96%;
+	height: 200px;
+	background-color: black;
+}
+.index5-topDiv{
+	margin-top: 10px;
+	height: 150px;
+	/*background-color: red;*/
+	width: 100%;
+	text-align: center;
+	
+}
+
+.index5-topDiv img{
+	border-radius: 40px;
+	height: 80px;
+	width: 80px;
+}

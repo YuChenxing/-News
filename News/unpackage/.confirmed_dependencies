@@ -1,0 +1,28 @@
+{
+  "detail.html": {
+    "href": "detail.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "index.html": {
+    "href": "index.html",
+    "resources": [
+      "app.manifest",
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "css/iconfont.css",
+      "css/index.css",
+      "imgs/navbar_netease@2x.png",
+      "imgs/login_username_icon@2x.png",
+      "imgs/comment_arrow_down@2x.png"
+    ],
+    "refer": [
+      "detail.html"
+    ],
+    "priority": 0
+  }
+}

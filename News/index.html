@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html manifest="app.manifest">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+    
+<script type="text/javascript">
+	mui.init({
+	  pullRefresh : {
+	    container:"#refreshContainer",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+	    up : {
+	      contentnomore:"没有更多数据了",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+	      contentrefresh : "正在加载...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+	      callback :pullfresh //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+	    }
+	  }
+  });
+  
+  mui.plusReady(function(){
+  	//Tab切换,找到容器组件
+	mui(".mui-bar-tab").on('tap','.mui-tab-item',function(e){
+		$('.container-div').css({"display":"none"});
+		$('.container-div').eq($(this).index()).css({"display":"block"});
+		mui('.mui-scroll-wrapper').scroll().scrollTo(0,0,0);//100毫秒滚动到顶
+	});
+	
+		//调取照相机
+document.getElementById("camare-action").addEventListener('tap',function(){getCamera()});
+
+//监听网络状态
+document.addEventListener( "netchange", onNetChange, false );
+//轮播图数据请求
+mui.ajax('http://c.m.163.com/nc/article/headline/T1348647853363/0-20.html?from=toutiao&passport=&devId=OPdeGFsVSojY0ILFe6009pLR%2FMsg7TLJv5TjaQQ6Hpjxd%2BaWU4dx4OOCg2vE3noj&size=20&version=5.5.3&spever=false&net=wifi&lat=&lon=&ts=1456985286&sign=%2BY9lXIDh3W7j69unWYNEiSG3So2sMceBy%2B%2FiFf2ZfHh48ErR02zJ6%2FKXOnxX046I&encryption=1&canal=appstore',{
+	dataType:'json',
+	type:'get',
+	timeout:10000,
+	success:function(data){
+		dataAnalyze(data);
+	},
+	error:function(error){
+		console.log("数据返回失败");
+		alert("网络无连接");
+
+		}
+});
+//轮播图数据请求
+	mui.ajax('http://c.m.163.com/nc/article/headline/T1348647853363/0-20.html?from=toutiao&passport=&devId=OPdeGFsVSojY0ILFe6009pLR%2FMsg7TLJv5TjaQQ6Hpjxd%2BaWU4dx4OOCg2vE3noj&size=20&version=5.5.3&spever=false&net=wifi&lat=&lon=&ts=1456985286&sign=%2BY9lXIDh3W7j69unWYNEiSG3So2sMceBy%2B%2FiFf2ZfHh48ErR02zJ6%2FKXOnxX046I&encryption=1&canal=appstore',{
+		dataType:'json',
+		type:'get',
+		timeout:10000,
+		success:function(data){
+			dataAnalyze(data);
+		},
+		error:function(error){
+			console.log("数据返回失败");
+			alert("网络无连接");
+		}
+});
+	
+//列表数据请求
+	mui.ajax('http://c.m.163.com/nc/article/headline/T1348647853363/30-20.html?from=toutiao&passport=&devId=OPdeGFsVSojY0ILFe6009pLR%2FMsg7TLJv5TjaQQ6Hpjxd%2BaWU4dx4OOCg2vE3noj&size=20&version=5.5.3&spever=false&net=wifi&lat=&lon=&ts=1456985878&sign=oDwq9mBweKUtUuiS%2FPvB015PyTDKHSxuyuVq2076XQB48ErR02zJ6%2FKXOnxX046I&encryption=1&canal=appstore',{
+		dataType:'json',
+		type:'get',
+		timeout:10000,
+		success:function(data){
+			listDataAnalyze(data);
+		},
+		error:function(error){
+			console.log("列表返回失败");
+			alert("网络无连接");
+		}
+});
+	
+//视听请求
+	mui.ajax('http://c.3g.163.com/nc/video/home/10-10.html',{
+		dataType:'josn',
+		type:'get',
+		timeout:10000,
+		success:function(data){
+			var jsonData = $.parseJSON(data);
+			viedioData(jsonData);
+		},
+		error:function(){
+			alert("网络无连接");
+		}
+	
+	});
+//plusReady闭标签
+ })
+//轮播图数据
+function dataAnalyze(data){
+	var arr = data.T1348647853363[0].ads;
+		var finalList = null;
+		for(var i = 0; i<arr.length;i++){
+			//轮播图标签结构
+           finalList = '<div class="mui-slider-item"><a href="#"><img src='+arr[i].imgsrc+'><p class="mui-slider-title">'+arr[i].title+'</p> </a></div>'
+           //插入slider-img标签里面
+           $("#slider-img").append(finalList);
+           //插入轮播标记
+           $("#slider-indicator").append('<div class="mui-indicator"></div>')
+           //插入完成必须初始化，否则图片不能滚动
+			mui('.mui-slider').slider({
+				  interval:0//自动轮播周期，若为0则不自动播放，默认为0；
+				});
+		}
+}
+
+//用来处理列表数据的函数
+function listDataAnalyze(data){
+	var arrayObj = data.T1348647853363;
+	for(var i = 0; i<arrayObj.length;i++){
+		finalList = '<li class="mui-table-view-cell mui-media list-cell"><a href="#"><img class="mui-media-object mui-pull-left" src='+arrayObj[i].img+'><div class="mui-media-body">'+arrayObj[i].title+'<p class="mui-ellipsis">'+arrayObj[i].digest+'</div></a></li>';
+		$("#tableView-List").append(finalList);
+	}
+	$(document).on('tap','.list-cell',function(){
+		mui.openWindow({
+			url:"detail.html",
+			id:"detail",
+			show:{
+				  	autoShow: true, //页面loaded事件发生后自动显示，默认为true
+	                aniShow: "slide-in-right", //页面显示动画，默认为”slide-in-right“；
+	                duration: 200 //页面动画持续时间，Android平台默认100毫秒，iOS平台默认200毫秒；
+
+			},
+			 extras:{
+	       	listName:arrayObj[$(this).index()].id
+	    }
+		})
+	})
+}
+  		
+//用来处理视听页面数据
+function viedioData(data){
+	var finalist = null;
+	var arr = data.videoList;
+	for(var i = 0;i<arr.length;i++){
+		finalist = '<div class="viedio-container"><strong class="viedio_title">'+data.videoList[i].title+'</strong><span class="viedio_subtitle">'+data.videoList[i].description+'</span><video class="play-video"controls poster='+arr[i].cover+' ><source src='+data.videoList[i].mp4_url+'></source><source src="myvideo.ogv" type="video/ogg"></source><source src="myvideo.webm" type="video/webm"></source><object width="" height="" type="application/x-shockwave-flash" data="myvideo.swf"><param name="movie" value="myvideo.swf" /><param name="flashvars" value="autostart=true&amp;file=myvideo.swf" /></object>当前浏览器不支持 video直接播放，点击这里下载视频： <a href="myvideo.webm">下载视频</a></video></div>';
+		$('#container-div-index3').append(finalist);
+	}
+}
+
+//调用相机函数
+ function getCamera() {
+ 	var cmr = plus.camera.getCamera();
+		var path = null;
+		cmr.captureImage( function( path ){
+//		//路径转换
+		plus.io.resolveLocalFileSystemURL(path,function(entry){
+			//转换为本地路径
+			var localUrl = entry.toLocalURL();
+			//修改图片路径
+			document.getElementById("camare-action").src = localUrl;
+		});
+		},function( error ) {alert( "图片选择失败");},{filename:"doc/camera/",index:1});
+ }
+ 
+ //监听网络状态
+ function onNetChange() {
+	var nt = plus.networkinfo.getCurrentType();
+	switch ( nt ) {
+		case plus.networkinfo.CONNECTION_ETHERNET:
+		case plus.networkinfo.CONNECTION_WIFI:
+		alert("已经连接wifi"); 
+		break; 
+		case plus.networkinfo.CONNECTION_CELL2G:
+		case plus.networkinfo.CONNECTION_CELL3G:
+		alert("已经连接3G网络")
+		case plus.networkinfo.CONNECTION_CELL4G:
+		alert("已经连接蜂窝网络");  
+		break; 
+		default:
+		alert("无网络连接"); 
+		break;
+	}
+}
+  		
+  		
+  		
+  		 //上拉加载更多刷新函数
+  	function pullfresh() {
+   //列表数据请求
+		mui.ajax('http://c.m.163.com/nc/article/headline/T1348647853363/30-20.html?from=toutiao&passport=&devId=OPdeGFsVSojY0ILFe6009pLR%2FMsg7TLJv5TjaQQ6Hpjxd%2BaWU4dx4OOCg2vE3noj&size=20&version=5.5.3&spever=false&net=wifi&lat=&lon=&ts=1456985878&sign=oDwq9mBweKUtUuiS%2FPvB015PyTDKHSxuyuVq2076XQB48ErR02zJ6%2FKXOnxX046I&encryption=1&canal=appstore',{
+			dataType:'json',
+			type:'get',
+			timeout:10000,
+			success:function(data){
+				listDataAnalyze(data);
+				//注意，加载完新数据后，必须执行如下代码，注意：若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
+				mui('#refreshContainer').pullRefresh().endPullupToRefresh();//结束刷新
+			},
+			error:function(error){
+				console.log("列表返回失败");
+				alert("网络无连接");
+			}
+	});
+}
+
+    </script>
+    
+  
+    <style type="text/css">
+	    	.mui-bar{
+	    	background-color: #dc3137;
+	    }
+		.mui-title img{
+	    		margin-top: 4%;
+	    		width: 14%;
+	    	}
+	    	.login_img img{
+	    		width: 37px;
+	    		height: 37px;
+	    		margin:1% 0 0 91%;
+	    		cursor: pointer;
+   	 	}
+	    	.tab_title{
+			width: 100%;
+			height: 40px;
+			background-color: white;
+	    	}
+	    	.tab_title a{
+	    		color: black;
+	    		margin:0 0 0 6%;
+	    		line-height: 40px;
+	    	}
+	    	.tab_title a:hover{
+	    		color: #dc3137;
+	    	}
+		.mui-slider-item img{
+	    		height: 200px;
+	    	}
+	    	.mui-tab-item {
+    			background-color: white;
+    		}	
+    		 	
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<!--中间“网易log”-->
+	    <h1 class="mui-title">
+	    		<img src="imgs/navbar_netease@2x.png"/>
+	    </h1>
+	    <!--右侧“搜”图标-->
+	    <!--<div class="login_img"><img src="imgs/night_search_icon@2x.png"/></div>-->
+	</header>
+	<nav class="mui-bar mui-bar-tab">
+		    <a class="mui-tab-item mui-active" index="0">
+		        <span class="mui-icon iconfont icon-xinwen"></span>
+		        <span class="mui-tab-label">新闻</span>
+		    </a>
+		    <a class="mui-tab-item" index="1">
+		        <span class="mui-icon iconfont icon-yuedu"></span>
+		        <span class="mui-tab-label">阅读</span>
+		    </a>
+		    <a class="mui-tab-item" index="2">
+		        <span class="mui-icon iconfont icon-shipin"></span>
+		        <span class="mui-tab-label">视听</span>
+		    </a>
+		     <a class="mui-tab-item" index="3">
+		        <span class="mui-icon iconfont icon-wode"></span>
+		        <span class="mui-tab-label">我</span>
+		    </a>
+		</nav>
+			<!--上拉加载更多容器-->
+	<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+	  <div class="mui-scroll">
+			<!--第一个页面-->
+			<div class="container-div" style="display: block;">
+				<div>
+					<div class="tab_title">
+						<a>头条</a>
+						<a >热点</a>
+						<a >娱乐</a>
+						<a >财经</a>
+						<a >体育</a>
+						<a ><img src="imgs/comment_arrow_down@2x.png"/></a>
+					</div>
+				</div>
+				
+				<div class="mui-slider ">
+		            <div class="mui-slider-group" id="slider-img">
+		            		<!--图片、标题-->
+		            </div>
+		            <!--注意这里面是图片滚动的标记，div的数量要和上面的匹配-->
+		            <div class="mui-slider-indicator" id="slider-indicator">
+		            		<!--图片滚动标记-->
+		            </div>
+				</div>
+				<ul class="mui-table-view" id="tableView-List"></ul>
+			</div>
+		
+		
+		
+		<!--第二个页面-->
+		<div class="container-div">
+			
+			<ul class="mui-table-view mui-grid-view">
+			    <li class="mui-table-view-cell mui-media mui-col-xs-6">
+			        <a href="#">
+			            <img class="mui-media-object" src="http://img0.imgtn.bdimg.com/it/u=228661466,2147366548&fm=11&gp=0.jpg">
+			            <div class="mui-media-body">angelababy</div>
+			        </a>
+			    </li>
+			    <li class="mui-table-view-cell mui-media mui-col-xs-6">
+			        <a href="http://www.jianshu.com/users/84b5ef6309d6/latest_articles">
+			            <img class="mui-media-object" src="http://img1.imgtn.bdimg.com/it/u=187435332,1856956297&fm=11&gp=0.jpg">
+			            <div class="mui-media-body">她当然是小美女喽</div>
+			        </a>
+			    </li>
+			    <li class="mui-table-view-cell mui-media mui-col-xs-6">
+			        <a href="http://image.baidu.com/search/detail?ct=503316480&z=0&ipn=false&word=angelababy&step_word=&pn=132&di=195610639760&rn=1&tn=baiduimagedetail&is=&istype=0&ie=utf-8&oe=utf-8&in=&cl=2&lm=-1&st=undefined&cs=874237152%2C114840319&os=1593680427%2C3868005737&ln=1000&fr=&fmq=1457428872077_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=&height=&face=undefined&ist=&jit=&cg=star&oriquery=&objurl=http%3A%2F%2Fwww.jx.xinhuanet.com%2Fnews%2Fssxw%2F2016-03%2F04%2F1118236661_14570765114551n.jpg&gsm=b4">
+			            <img class="mui-media-object" src="http://img4.imgtn.bdimg.com/it/u=3973574936,4030812978&fm=23&gp=0.jpg">
+			            <div class="mui-media-body">她当然是小美女喽</div>
+			        </a>
+			    </li>
+			    <li class="mui-table-view-cell mui-media mui-col-xs-6">
+			        <a href="http://image.baidu.com/search/detail?ct=503316480&z=0&ipn=false&word=angelababy&step_word=&pn=132&di=195610639760&rn=1&tn=baiduimagedetail&is=&istype=0&ie=utf-8&oe=utf-8&in=&cl=2&lm=-1&st=undefined&cs=874237152%2C114840319&os=1593680427%2C3868005737&ln=1000&fr=&fmq=1457428872077_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=&height=&face=undefined&ist=&jit=&cg=star&oriquery=&objurl=http%3A%2F%2Fwww.jx.xinhuanet.com%2Fnews%2Fssxw%2F2016-03%2F04%2F1118236661_14570765114551n.jpg&gsm=b4">
+			            <img class="mui-media-object" src="http://img2.imgtn.bdimg.com/it/u=1069537753,3932258861&fm=23&gp=0.jpg">
+			            <div class="mui-media-body">她当然是小美女喽</div>
+			        </a>
+			    </li>
+			     <li class="mui-table-view-cell mui-media mui-col-xs-6">
+			        <a href="http://image.baidu.com/search/detail?ct=503316480&z=0&ipn=false&word=angelababy&step_word=&pn=132&di=195610639760&rn=1&tn=baiduimagedetail&is=&istype=0&ie=utf-8&oe=utf-8&in=&cl=2&lm=-1&st=undefined&cs=874237152%2C114840319&os=1593680427%2C3868005737&ln=1000&fr=&fmq=1457428872077_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=&height=&face=undefined&ist=&jit=&cg=star&oriquery=&objurl=http%3A%2F%2Fwww.jx.xinhuanet.com%2Fnews%2Fssxw%2F2016-03%2F04%2F1118236661_14570765114551n.jpg&gsm=b4">
+			            <img class="mui-media-object" src="http://img2.imgtn.bdimg.com/it/u=2226388674,3850143078&fm=23&gp=0.jpg">
+			            <div class="mui-media-body">她当然是小美女喽</div>
+			        </a>
+			    </li>
+			     <li class="mui-table-view-cell mui-media mui-col-xs-6">
+			        <a href="http://image.baidu.com/search/detail?ct=503316480&z=0&ipn=false&word=angelababy&step_word=&pn=132&di=195610639760&rn=1&tn=baiduimagedetail&is=&istype=0&ie=utf-8&oe=utf-8&in=&cl=2&lm=-1&st=undefined&cs=874237152%2C114840319&os=1593680427%2C3868005737&ln=1000&fr=&fmq=1457428872077_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=&height=&face=undefined&ist=&jit=&cg=star&oriquery=&objurl=http%3A%2F%2Fwww.jx.xinhuanet.com%2Fnews%2Fssxw%2F2016-03%2F04%2F1118236661_14570765114551n.jpg&gsm=b4">
+			            <img class="mui-media-object" src="http://img1.imgtn.bdimg.com/it/u=3147254935,3611439682&fm=23&gp=0.jpg">
+			            <div class="mui-media-body">她当然是小美女喽</div>
+			        </a>
+			    </li>
+			</ul>
+		</div>
+		<!--第三个页面-->
+		<div class="container-div" id="container-div-index3">
+			
+			
+			
+		</div>
+
+		<!--第四个页面-->
+		<div class="container-div">
+			
+			<div class="index5-topDiv">
+				<img src="imgs/login_username_icon@2x.png" alt="" id="camare-action" />
+				<p>更换头像</p>
+				
+				
+			</div>
+			<div class="mui-card">
+			    <ul class="mui-table-view mui-grid-view mui-grid-9">
+			        <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+			            <a href="#">
+			                <span class="mui-icon mui-icon-home"></span>
+			                <div class="mui-media-body">Home</div>
+			            </a>
+			        </li>
+			        <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+			            <a href="#">
+			                <span class="mui-icon mui-icon-email"><span class="mui-badge mui-badge-red">5</span></span>
+			                <div class="mui-media-body">Email</div>
+			            </a>
+			        </li>
+			        <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+			            <a href="#">
+			                <span class="mui-icon mui-icon-chatbubble"></span>
+			                <div class="mui-media-body">Chat</div>
+			            </a>
+			        </li>
+			        <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+			            <a href="#">
+			                <span class="mui-icon mui-icon-location"></span>
+			                <div class="mui-media-body">Location</div>
+			            </a>
+			        </li>
+			        <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+			            <a href="#">
+			                <span class="mui-icon mui-icon-search"></span>
+			                <div class="mui-media-body">Search</div>
+			            </a>
+			        </li>
+			        <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+			            <a href="#">
+			                <span class="mui-icon mui-icon-phone"></span>
+			                <div class="mui-media-body">Phone</div>
+			            </a>
+			        </li>
+			    </ul>
+			</div>
+		</div>
+</div>		
+<!--contentBody的结束标签-->
+
+</div>
+</body>
+</html>
